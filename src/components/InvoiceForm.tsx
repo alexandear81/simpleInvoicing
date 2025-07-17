@@ -1,14 +1,14 @@
 import React, { useState } from 'react';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Card, CardContent } from '@/components/ui/card';
+import { Button } from './ui/button';
+import { Input } from './ui/input';
+import { Card, CardContent } from './ui/card';
 
 export default function Invoice() {
   const [items, setItems] = useState([
     { description: '', quantity: 1, price: 0.0, vat: 0 }
   ]);
 
-  const updateItem = (index, field, value) => {
+  const updateItem = (index: number, field: string, value: string) => {
     const updated = [...items];
     updated[index][field] = field === 'description' ? value : parseFloat(value);
     setItems(updated);
