@@ -42,25 +42,25 @@ export default function Invoice() {
               <Input
                 placeholder="Description"
                 value={item.description}
-                onChange={(e) => updateItem(index, 'description', e.target.value)}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => updateItem(index, 'description', e.target.value)}
                 className="col-span-2"
               />
               <Input
                 type="number"
                 value={item.quantity}
-                onChange={(e) => updateItem(index, 'quantity', e.target.value)}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => updateItem(index, 'quantity', e.target.value)}
                 className="col-span-1"
               />
               <Input
                 type="number"
                 value={item.price}
-                onChange={(e) => updateItem(index, 'price', e.target.value)}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => updateItem(index, 'price', e.target.value)}
                 className="col-span-1"
               />
               <Input
                 type="number"
                 value={item.vat}
-                onChange={(e) => updateItem(index, 'vat', e.target.value)}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => updateItem(index, 'vat', e.target.value)}
                 className="col-span-1"
               />
               <div className="text-sm text-right col-span-1">
