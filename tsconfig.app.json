@@ -12,6 +12,7 @@
     "allowImportingTsExtensions": true,
     "verbatimModuleSyntax": true,
     "esModuleInterop": true,
+    "emitDeclarationOnly": true,
     "moduleDetection": "force",
     "noEmit": false,
     "noEmitOnError": false,
