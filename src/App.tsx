@@ -1,5 +1,5 @@
-import InvoiceForm from "./components/InvoiceForm";
-import './App.css'
+import { InvoiceForm } from "./components/InvoiceForm";
+//import './App.css';
 
 function App() {
 

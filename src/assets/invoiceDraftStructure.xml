@@ -1,0 +1,40 @@
+<Invoice>
+    <Header>
+        <Caption />
+        <Number />
+        <Dates>
+            <IssueDate />
+            <SaleDate />
+        </Dates>
+        <Currency />
+        <InvoiceTotal />
+    </Header>
+    <Parties>
+        <PartyFrom>
+            <Name />
+            <TaxId />
+            <Address />
+            <Account />
+        </PartyFrom>
+        <PartyTo>
+            <Name />
+            <TaxId />
+            <Address />
+        </PartyTo>
+    </Parties>
+    <PaymentTerms>
+        <PaymentType />
+        <PaymentDueDate />
+    </PaymentTerms>
+    <Items>
+        <ItemPosition />
+        <ItemDescription />
+        <ItemUoM />
+        <ItemQty />
+        <NetPrice />
+        <TaxRate />
+        <NetValue />
+        <TaxValue />
+        <GrossValue />
+    </Items>
+</Invoice>

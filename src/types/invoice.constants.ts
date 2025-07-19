@@ -310,7 +310,7 @@ export const c_TStawkaPodatku = [
   , 'zw'
   , 'oo'
   , 'np'] as const;
-export type c_TStawkaPodatku = typeof c_TStawkaPodatku[number];
+export type TStawkaPodatku = typeof c_TStawkaPodatku[number];
 
 export const c_TOznaczenieProcedury = [
   'WSTO_EE'

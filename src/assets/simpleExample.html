@@ -1,0 +1,600 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Polish Invoice Generator</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Inter font -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f3f4f6; /* Light gray background */
+        }
+        /* Custom styles for print */
+        @media print {
+            body {
+                background-color: #fff;
+            }
+            .no-print {
+                display: none !important;
+            }
+            .invoice-preview {
+                width: 100%;
+                margin: 0;
+                box-shadow: none;
+                border: none;
+                padding: 0;
+            }
+        }
+    </style>
+</head>
+<body class="p-4 md:p-8">
+    <div class="max-w-4xl mx-auto bg-white rounded-xl shadow-lg p-6 md:p-8">
+        <h1 class="text-3xl font-bold text-center text-gray-800 mb-8">Polish Invoice Generator</h1>
+
+        <!-- Invoice Form -->
+        <div id="invoice-form" class="no-print">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                <!-- Seller Details -->
+                <div class="bg-gray-50 p-4 rounded-lg border border-gray-200">
+                    <h2 class="text-xl font-semibold text-gray-700 mb-4">Seller Details</h2>
+                    <div class="mb-4">
+                        <label for="seller-name" class="block text-sm font-medium text-gray-700 mb-1">Name/Company</label>
+                        <input type="text" id="seller-name" class="w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500" value="Your Company Name Sp. z o.o.">
+                    </div>
+                    <div class="mb-4">
+                        <label for="seller-address" class="block text-sm font-medium text-gray-700 mb-1">Address</label>
+                        <input type="text" id="seller-address" class="w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500" value="ul. Przykładowa 10, 30-001 Kraków">
+                    </div>
+                    <div class="mb-4">
+                        <label for="seller-country" class="block text-sm font-medium text-gray-700 mb-1">Country</label>
+                        <input type="text" id="seller-country" class="w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500" value="Poland">
+                    </div>
+                    <div class="mb-4">
+                        <label for="seller-nip" class="block text-sm font-medium text-gray-700 mb-1">NIP (Tax ID)</label>
+                        <input type="text" id="seller-nip" class="w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500" value="PL1234567890">
+                    </div>
+                    <div id="seller-bank-account-group">
+                        <label for="seller-bank" class="block text-sm font-medium text-gray-700 mb-1">Bank Account</label>
+                        <input type="text" id="seller-bank" class="w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500" value="PL00 0000 0000 0000 0000 0000 0000">
+                    </div>
+                </div>
+
+                <!-- Buyer Details -->
+                <div class="bg-gray-50 p-4 rounded-lg border border-gray-200">
+                    <h2 class="text-xl font-semibold text-gray-700 mb-4">Buyer Details</h2>
+                    <div class="mb-4">
+                        <label for="buyer-name" class="block text-sm font-medium text-gray-700 mb-1">Name/Company</label>
+                        <input type="text" id="buyer-name" class="w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500" value="Client Innovations Ltd.">
+                    </div>
+                    <div class="mb-4">
+                        <label for="buyer-address" class="block text-sm font-medium text-gray-700 mb-1">Address</label>
+                        <input type="text" id="buyer-address" class="w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500" value="ul. Kliencka 5, 00-001 Warszawa">
+                    </div>
+                    <div class="mb-4">
+                        <label for="buyer-country" class="block text-sm font-medium text-gray-700 mb-1">Country</label>
+                        <input type="text" id="buyer-country" class="w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500" value="Poland">
+                    </div>
+                    <div>
+                        <label for="buyer-nip" class="block text-sm font-medium text-gray-700 mb-1">NIP (Tax ID)</label>
+                        <input type="text" id="buyer-nip" class="w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500" value="PL0987654321">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Invoice General Info -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8 bg-gray-50 p-4 rounded-lg border border-gray-200">
+                <div>
+                    <label for="invoice-number" class="block text-sm font-medium text-gray-700 mb-1">Invoice Number</label>
+                    <input type="text" id="invoice-number" class="w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500" value="FV/2025/07/001">
+                </div>
+                <div>
+                    <label for="issue-date" class="block text-sm font-medium text-gray-700 mb-1">Issue Date</label>
+                    <input type="date" id="issue-date" class="w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500">
+                </div>
+                <div>
+                    <label for="due-date" class="block text-sm font-medium text-gray-700 mb-1">Due Date</label>
+                    <input type="date" id="due-date" class="w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500">
+                </div>
+                <div>
+                    <label for="invoice-type" class="block text-sm font-medium text-gray-700 mb-1">Invoice Type</label>
+                    <select id="invoice-type" class="w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500">
+                        <option value="standard">Standard</option>
+                        <option value="correction">Correction</option>
+                    </select>
+                </div>
+                <div id="reference-invoice-group" class="hidden">
+                    <label for="reference-invoice-number" class="block text-sm font-medium text-gray-700 mb-1">Reference Invoice No.</label>
+                    <input type="text" id="reference-invoice-number" class="w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500">
+                </div>
+                <div>
+                    <label for="currency" class="block text-sm font-medium text-gray-700 mb-1">Currency</label>
+                    <input type="text" id="currency" class="w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500" value="PLN">
+                </div>
+                <div>
+                    <label for="payment-type" class="block text-sm font-medium text-gray-700 mb-1">Payment Type</label>
+                    <select id="payment-type" class="w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500">
+                        <option value="bank_transfer">Bank Transfer</option>
+                        <option value="cash">Cash</option>
+                        <option value="card">Card</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Invoice Items -->
+            <div class="mb-8 bg-gray-50 p-4 rounded-lg border border-gray-200">
+                <h2 class="text-xl font-semibold text-gray-700 mb-4">Invoice Items</h2>
+                <div class="grid grid-cols-1 md:grid-cols-5 gap-4 mb-4">
+                    <div class="md:col-span-2">
+                        <label for="item-description" class="block text-sm font-medium text-gray-700 mb-1">Description</label>
+                        <input type="text" id="item-description" class="w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500">
+                    </div>
+                    <div>
+                        <label for="item-quantity" class="block text-sm font-medium text-gray-700 mb-1">Quantity</label>
+                        <input type="number" id="item-quantity" class="w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500" value="1">
+                    </div>
+                    <div>
+                        <label for="item-unit-price" class="block text-sm font-medium text-gray-700 mb-1">Unit Price (Net)</label>
+                        <input type="number" id="item-unit-price" class="w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500" step="0.01" value="100.00">
+                    </div>
+                    <div>
+                        <label for="item-vat-rate" class="block text-sm font-medium text-gray-700 mb-1">VAT Rate (%)</label>
+                        <select id="item-vat-rate" class="w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500">
+                            <option value="23">23%</option>
+                            <option value="8">8%</option>
+                            <option value="5">5%</option>
+                            <option value="0">0%</option>
+                            <option value="zw">ZW (Exempt)</option>
+                            <option value="np">NP (Not subject)</option>
+                        </select>
+                    </div>
+                </div>
+                <button id="add-item" class="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition duration-150 ease-in-out">Add Item</button>
+
+                <div class="mt-6 overflow-x-auto">
+                    <table class="min-w-full bg-white rounded-lg shadow-sm">
+                        <thead>
+                            <tr class="bg-gray-100 border-b border-gray-200 text-gray-600 uppercase text-sm leading-normal">
+                                <th class="py-3 px-6 text-left">Description</th>
+                                <th class="py-3 px-6 text-center">Qty</th>
+                                <th class="py-3 px-6 text-right">Net Price</th>
+                                <th class="py-3 px-6 text-right">Net Value</th>
+                                <th class="py-3 px-6 text-center">VAT Rate</th>
+                                <th class="py-3 px-6 text-right">VAT Value</th>
+                                <th class="py-3 px-6 text-right">Gross Value</th>
+                                <th class="py-3 px-6 text-center">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="invoice-items-table-body" class="text-gray-700 text-sm">
+                            <!-- Invoice items will be added here by JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Summary -->
+            <div class="flex justify-end mb-8">
+                <div class="w-full md:w-1/2 bg-gray-50 p-4 rounded-lg border border-gray-200">
+                    <div class="flex justify-between mb-2">
+                        <span class="text-gray-700 font-medium">Total Net:</span>
+                        <span id="total-net" class="text-gray-900 font-semibold">0.00 PLN</span>
+                    </div>
+                    <div class="flex justify-between mb-2">
+                        <span class="text-gray-700 font-medium">Total VAT:</span>
+                        <span id="total-vat" class="text-gray-900 font-semibold">0.00 PLN</span>
+                    </div>
+                    <div class="flex justify-between border-t pt-2 mt-2 border-gray-300">
+                        <span class="text-lg text-gray-800 font-bold">Total Gross:</span>
+                        <span id="total-gross" class="text-lg text-gray-900 font-bold">0.00 PLN</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex justify-center gap-4">
+                <button id="generate-invoice" class="bg-green-600 text-white py-3 px-6 rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition duration-150 ease-in-out text-lg font-semibold shadow-md">Generate Invoice Preview</button>
+            </div>
+        </div>
+
+        <!-- Invoice Preview Section -->
+        <div id="invoice-preview" class="hidden invoice-preview bg-white p-8 rounded-xl shadow-lg border border-gray-200 mt-8">
+            <div class="flex justify-between items-start mb-8">
+                <div>
+                    <h2 class="text-2xl font-bold text-gray-800 mb-2">INVOICE</h2>
+                    <p class="text-gray-600">Invoice No: <span id="preview-invoice-number" class="font-semibold"></span></p>
+                    <p class="text-gray-600">Issue Date: <span id="preview-issue-date" class="font-semibold"></span></p>
+                    <p class="text-gray-600">Due Date: <span id="preview-due-date" class="font-semibold"></span></p>
+                    <p class="text-gray-600">Invoice Type: <span id="preview-invoice-type" class="font-semibold capitalize"></span></p>
+                    <p id="preview-reference-invoice-group" class="text-gray-600 hidden">Reference No: <span id="preview-reference-invoice-number" class="font-semibold"></span></p>
+                </div>
+                <img src="https://placehold.co/150x50/e0e0e0/000000?text=Your+Logo" alt="Company Logo" class="rounded-md">
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
+                <!-- Seller Info -->
+                <div>
+                    <h3 class="text-lg font-semibold text-gray-700 mb-2">Seller:</h3>
+                    <p id="preview-seller-name" class="font-medium text-gray-800"></p>
+                    <p id="preview-seller-address" class="text-gray-600"></p>
+                    <p class="text-gray-600">Country: <span id="preview-seller-country"></span></p>
+                    <p class="text-gray-600">NIP: <span id="preview-seller-nip"></span></p>
+                    <p id="preview-seller-bank-preview-group" class="text-gray-600">Bank Account: <span id="preview-seller-bank"></span></p>
+                </div>
+                <!-- Buyer Info -->
+                <div>
+                    <h3 class="text-lg font-semibold text-gray-700 mb-2">Buyer:</h3>
+                    <p id="preview-buyer-name" class="font-medium text-gray-800"></p>
+                    <p id="preview-buyer-address" class="text-gray-600"></p>
+                    <p class="text-gray-600">Country: <span id="preview-buyer-country"></span></p>
+                    <p class="text-gray-600">NIP: <span id="preview-buyer-nip"></span></p>
+                </div>
+            </div>
+
+            <!-- Invoice Details -->
+            <div class="mb-8">
+                <p class="text-gray-600">Currency: <span id="preview-currency" class="font-semibold"></span></p>
+                <p class="text-gray-600">Payment Type: <span id="preview-payment-type" class="font-semibold capitalize"></span></p>
+            </div>
+
+            <!-- Invoice Items Table -->
+            <div class="overflow-x-auto mb-8">
+                <table class="min-w-full border-collapse border border-gray-300">
+                    <thead>
+                        <tr class="bg-blue-50 border-b border-gray-300 text-gray-700 uppercase text-sm leading-normal">
+                            <th class="py-3 px-4 text-left border border-gray-300">Lp.</th>
+                            <th class="py-3 px-4 text-left border border-gray-300">Description</th>
+                            <th class="py-3 px-4 text-center border border-gray-300">Qty</th>
+                            <th class="py-3 px-4 text-right border border-gray-300">Unit Net Price</th>
+                            <th class="py-3 px-4 text-right border border-gray-300">Net Value</th>
+                            <th class="py-3 px-4 text-center border border-gray-300">VAT Rate</th>
+                            <th class="py-3 px-4 text-right border border-gray-300">VAT Value</th>
+                            <th class="py-3 px-4 text-right border border-gray-300">Gross Value</th>
+                        </tr>
+                    </thead>
+                    <tbody id="preview-invoice-items-body" class="text-gray-700 text-sm">
+                        <!-- Preview items will be added here by JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Totals Summary -->
+            <div class="flex justify-end mb-8">
+                <div class="w-full md:w-1/2">
+                    <div class="flex justify-between mb-2">
+                        <span class="text-gray-700 font-medium">Total Net:</span>
+                        <span id="preview-total-net" class="text-gray-900 font-semibold"></span>
+                    </div>
+                    <div class="flex justify-between mb-2">
+                        <span class="text-gray-700 font-medium">Total VAT:</span>
+                        <span id="preview-total-vat" class="text-gray-900 font-semibold"></span>
+                    </div>
+                    <div class="flex justify-between border-t pt-2 mt-2 border-gray-300">
+                        <span class="text-lg text-gray-800 font-bold">Total Gross:</span>
+                        <span id="preview-total-gross" class="text-lg text-gray-900 font-bold"></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex justify-center gap-4 no-print">
+                <button id="print-invoice" class="bg-blue-600 text-white py-3 px-6 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition duration-150 ease-in-out text-lg font-semibold shadow-md">Print Invoice</button>
+                <button id="edit-invoice" class="bg-gray-400 text-white py-3 px-6 rounded-md hover:bg-gray-500 focus:outline-none focus:ring-2 focus:ring-gray-300 focus:ring-offset-2 transition duration-150 ease-in-out text-lg font-semibold shadow-md">Edit Invoice</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Invoice Application Logic
+        const invoiceItems = [];
+        let itemCounter = 0;
+
+        const elements = {
+            sellerName: document.getElementById('seller-name'),
+            sellerAddress: document.getElementById('seller-address'),
+            sellerCountry: document.getElementById('seller-country'), // New
+            sellerNip: document.getElementById('seller-nip'),
+            sellerBank: document.getElementById('seller-bank'),
+            sellerBankAccountGroup: document.getElementById('seller-bank-account-group'), // New
+
+            buyerName: document.getElementById('buyer-name'),
+            buyerAddress: document.getElementById('buyer-address'),
+            buyerCountry: document.getElementById('buyer-country'), // New
+            buyerNip: document.getElementById('buyer-nip'),
+
+            invoiceNumber: document.getElementById('invoice-number'),
+            issueDate: document.getElementById('issue-date'),
+            dueDate: document.getElementById('due-date'),
+            invoiceType: document.getElementById('invoice-type'), // New
+            referenceInvoiceNumber: document.getElementById('reference-invoice-number'), // New
+            referenceInvoiceGroup: document.getElementById('reference-invoice-group'), // New
+            currency: document.getElementById('currency'), // New
+            paymentType: document.getElementById('payment-type'), // New
+
+            itemDescription: document.getElementById('item-description'),
+            itemQuantity: document.getElementById('item-quantity'),
+            itemUnitPrice: document.getElementById('item-unit-price'),
+            itemVatRate: document.getElementById('item-vat-rate'),
+            addItemButton: document.getElementById('add-item'),
+            invoiceItemsTableBody: document.getElementById('invoice-items-table-body'),
+            totalNet: document.getElementById('total-net'),
+            totalVat: document.getElementById('total-vat'),
+            totalGross: document.getElementById('total-gross'),
+            generateInvoiceButton: document.getElementById('generate-invoice'),
+            invoiceForm: document.getElementById('invoice-form'),
+            invoicePreview: document.getElementById('invoice-preview'),
+            printInvoiceButton: document.getElementById('print-invoice'),
+            editInvoiceButton: document.getElementById('edit-invoice'),
+
+            // Preview elements
+            previewInvoiceNumber: document.getElementById('preview-invoice-number'),
+            previewIssueDate: document.getElementById('preview-issue-date'),
+            previewDueDate: document.getElementById('preview-due-date'),
+            previewInvoiceType: document.getElementById('preview-invoice-type'), // New
+            previewReferenceInvoiceNumber: document.getElementById('preview-reference-invoice-number'), // New
+            previewReferenceInvoiceGroup: document.getElementById('preview-reference-invoice-group'), // New
+            previewCurrency: document.getElementById('preview-currency'), // New
+            previewPaymentType: document.getElementById('preview-payment-type'), // New
+
+            previewSellerName: document.getElementById('preview-seller-name'),
+            previewSellerAddress: document.getElementById('preview-seller-address'),
+            previewSellerCountry: document.getElementById('preview-seller-country'), // New
+            previewSellerNip: document.getElementById('preview-seller-nip'),
+            previewSellerBank: document.getElementById('preview-seller-bank'),
+            previewSellerBankPreviewGroup: document.getElementById('preview-seller-bank-preview-group'), // New
+
+            previewBuyerName: document.getElementById('preview-buyer-name'),
+            previewBuyerAddress: document.getElementById('preview-buyer-address'),
+            previewBuyerCountry: document.getElementById('preview-buyer-country'), // New
+            previewBuyerNip: document.getElementById('preview-buyer-nip'),
+            previewInvoiceItemsBody: document.getElementById('preview-invoice-items-body'),
+            previewTotalNet: document.getElementById('preview-total-net'),
+            previewTotalVat: document.getElementById('preview-total-vat'),
+            previewTotalGross: document.getElementById('preview-total-gross'),
+        };
+
+        // Set current date for issue date and due date (e.g., 7 days later)
+        const today = new Date();
+        const dueDate = new Date();
+        dueDate.setDate(today.getDate() + 7);
+
+        elements.issueDate.value = today.toISOString().split('T')[0];
+        elements.dueDate.value = dueDate.toISOString().split('T')[0];
+
+        // Function to format currency
+        const formatCurrency = (value) => {
+            return parseFloat(value).toFixed(2) + ' ' + elements.currency.value; // Use selected currency
+        };
+
+        // Function to calculate item values
+        const calculateItemValues = (quantity, unitPrice, vatRate) => {
+            const netValue = quantity * unitPrice;
+            let vatValue = 0;
+            let grossValue = netValue;
+
+            if (typeof vatRate === 'number') {
+                vatValue = netValue * (vatRate / 100);
+                grossValue = netValue + vatValue;
+            }
+            // If vatRate is 'zw' or 'np', vatValue is 0 and grossValue is netValue
+
+            return {
+                netValue: netValue,
+                vatValue: vatValue,
+                grossValue: grossValue
+            };
+        };
+
+        // Function to render invoice items table
+        const renderInvoiceItems = () => {
+            elements.invoiceItemsTableBody.innerHTML = ''; // Clear existing rows
+            invoiceItems.forEach((item, index) => {
+                const row = document.createElement('tr');
+                row.classList.add('border-b', 'border-gray-200', 'hover:bg-gray-50');
+                row.innerHTML = `
+                    <td class="py-3 px-6 text-left">${item.description}</td>
+                    <td class="py-3 px-6 text-center">${item.quantity}</td>
+                    <td class="py-3 px-6 text-right">${formatCurrency(item.unitPrice)}</td>
+                    <td class="py-3 px-6 text-right">${formatCurrency(item.netValue)}</td>
+                    <td class="py-3 px-6 text-center">${typeof item.vatRate === 'number' ? item.vatRate + '%' : item.vatRate.toUpperCase()}</td>
+                    <td class="py-3 px-6 text-right">${formatCurrency(item.vatValue)}</td>
+                    <td class="py-3 px-6 text-right">${formatCurrency(item.grossValue)}</td>
+                    <td class="py-3 px-6 text-center">
+                        <button data-id="${item.id}" class="remove-item-btn text-red-500 hover:text-red-700 font-semibold">Remove</button>
+                    </td>
+                `;
+                elements.invoiceItemsTableBody.appendChild(row);
+            });
+            updateTotals();
+        };
+
+        // Function to update total calculations
+        const updateTotals = () => {
+            let totalNet = 0;
+            let totalVat = 0;
+            let totalGross = 0;
+
+            invoiceItems.forEach(item => {
+                totalNet += item.netValue;
+                totalVat += item.vatValue;
+                totalGross += item.grossValue;
+            });
+
+            elements.totalNet.textContent = formatCurrency(totalNet);
+            elements.totalVat.textContent = formatCurrency(totalVat);
+            elements.totalGross.textContent = formatCurrency(totalGross);
+        };
+
+        // Add Item Button Event Listener
+        elements.addItemButton.addEventListener('click', () => {
+            const description = elements.itemDescription.value.trim();
+            const quantity = parseFloat(elements.itemQuantity.value);
+            const unitPrice = parseFloat(elements.itemUnitPrice.value);
+            const vatRateInput = elements.itemVatRate.value;
+            const vatRate = vatRateInput === 'zw' || vatRateInput === 'np' ? vatRateInput : parseFloat(vatRateInput);
+
+            if (!description || isNaN(quantity) || quantity <= 0 || isNaN(unitPrice) || unitPrice < 0) {
+                // Using a custom message box instead of alert()
+                const messageBox = document.createElement('div');
+                messageBox.classList.add('fixed', 'inset-0', 'bg-gray-800', 'bg-opacity-75', 'flex', 'items-center', 'justify-center', 'z-50');
+                messageBox.innerHTML = `
+                    <div class="bg-white p-6 rounded-lg shadow-xl max-w-sm mx-auto">
+                        <h3 class="text-lg font-semibold text-red-600 mb-4">Input Error</h3>
+                        <p class="text-gray-700 mb-6">Please enter valid description, quantity, and unit price.</p>
+                        <button id="message-box-ok" class="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">OK</button>
+                    </div>
+                `;
+                document.body.appendChild(messageBox);
+
+                document.getElementById('message-box-ok').addEventListener('click', () => {
+                    messageBox.remove();
+                });
+                return;
+            }
+
+            const { netValue, vatValue, grossValue } = calculateItemValues(quantity, unitPrice, vatRate);
+
+            itemCounter++;
+            invoiceItems.push({
+                id: itemCounter,
+                description,
+                quantity,
+                unitPrice,
+                vatRate,
+                netValue,
+                vatValue,
+                grossValue
+            });
+
+            // Clear item input fields
+            elements.itemDescription.value = '';
+            elements.itemQuantity.value = '1';
+            elements.itemUnitPrice.value = '100.00';
+            elements.itemVatRate.value = '23';
+
+            renderInvoiceItems();
+        });
+
+        // Remove Item Event Listener (delegation)
+        elements.invoiceItemsTableBody.addEventListener('click', (event) => {
+            if (event.target.classList.contains('remove-item-btn')) {
+                const itemIdToRemove = parseInt(event.target.dataset.id);
+                const itemIndex = invoiceItems.findIndex(item => item.id === itemIdToRemove);
+                if (itemIndex > -1) {
+                    invoiceItems.splice(itemIndex, 1);
+                    renderInvoiceItems();
+                }
+            }
+        });
+
+        // Conditional visibility for Bank Account based on Payment Type
+        const toggleBankAccountVisibility = () => {
+            if (elements.paymentType.value === 'bank_transfer') {
+                elements.sellerBankAccountGroup.classList.remove('hidden');
+                elements.sellerBank.required = true;
+            } else {
+                elements.sellerBankAccountGroup.classList.add('hidden');
+                elements.sellerBank.required = false;
+            }
+        };
+
+        // Conditional visibility for Reference Invoice Number based on Invoice Type
+        const toggleReferenceInvoiceVisibility = () => {
+            if (elements.invoiceType.value === 'correction') {
+                elements.referenceInvoiceGroup.classList.remove('hidden');
+                elements.referenceInvoiceNumber.required = true;
+            } else {
+                elements.referenceInvoiceGroup.classList.add('hidden');
+                elements.referenceInvoiceNumber.required = false;
+            }
+        };
+
+        // Event Listeners for conditional fields
+        elements.paymentType.addEventListener('change', toggleBankAccountVisibility);
+        elements.invoiceType.addEventListener('change', toggleReferenceInvoiceVisibility);
+
+        // Generate Invoice Preview Button Event Listener
+        elements.generateInvoiceButton.addEventListener('click', () => {
+            // Populate preview details
+            elements.previewInvoiceNumber.textContent = elements.invoiceNumber.value;
+            elements.previewIssueDate.textContent = elements.issueDate.value;
+            elements.previewDueDate.textContent = elements.dueDate.value;
+            elements.previewInvoiceType.textContent = elements.invoiceType.value; // New
+            elements.previewCurrency.textContent = elements.currency.value; // New
+            elements.previewPaymentType.textContent = elements.paymentType.value.replace('_', ' '); // New
+
+            // Handle conditional preview elements
+            if (elements.invoiceType.value === 'correction') {
+                elements.previewReferenceInvoiceGroup.classList.remove('hidden');
+                elements.previewReferenceInvoiceNumber.textContent = elements.referenceInvoiceNumber.value;
+            } else {
+                elements.previewReferenceInvoiceGroup.classList.add('hidden');
+                elements.previewReferenceInvoiceNumber.textContent = '';
+            }
+
+            elements.previewSellerName.textContent = elements.sellerName.value;
+            elements.previewSellerAddress.textContent = elements.sellerAddress.value;
+            elements.previewSellerCountry.textContent = elements.sellerCountry.value; // New
+            elements.previewSellerNip.textContent = elements.sellerNip.value;
+            
+            if (elements.paymentType.value === 'bank_transfer') {
+                elements.previewSellerBankPreviewGroup.classList.remove('hidden');
+                elements.previewSellerBank.textContent = elements.sellerBank.value;
+            } else {
+                elements.previewSellerBankPreviewGroup.classList.add('hidden');
+                elements.previewSellerBank.textContent = '';
+            }
+
+            elements.previewBuyerName.textContent = elements.buyerName.value;
+            elements.previewBuyerAddress.textContent = elements.buyerAddress.value;
+            elements.previewBuyerCountry.textContent = elements.buyerCountry.value; // New
+            elements.previewBuyerNip.textContent = elements.buyerNip.value;
+
+            // Populate preview items table
+            elements.previewInvoiceItemsBody.innerHTML = '';
+            invoiceItems.forEach((item, index) => {
+                const row = document.createElement('tr');
+                row.classList.add('border-b', 'border-gray-200');
+                row.innerHTML = `
+                    <td class="py-2 px-4 text-left border border-gray-300">${index + 1}.</td>
+                    <td class="py-2 px-4 text-left border border-gray-300">${item.description}</td>
+                    <td class="py-2 px-4 text-center border border-gray-300">${item.quantity}</td>
+                    <td class="py-2 px-4 text-right border border-gray-300">${formatCurrency(item.unitPrice)}</td>
+                    <td class="py-2 px-4 text-right border border-gray-300">${formatCurrency(item.netValue)}</td>
+                    <td class="py-2 px-4 text-center border border-gray-300">${typeof item.vatRate === 'number' ? item.vatRate + '%' : item.vatRate.toUpperCase()}</td>
+                    <td class="py-2 px-4 text-right border border-gray-300">${formatCurrency(item.vatValue)}</td>
+                    <td class="py-2 px-4 text-right border border-gray-300">${formatCurrency(item.grossValue)}</td>
+                `;
+                elements.previewInvoiceItemsBody.appendChild(row);
+            });
+
+            // Populate preview totals
+            elements.previewTotalNet.textContent = elements.totalNet.textContent;
+            elements.previewTotalVat.textContent = elements.totalVat.textContent;
+            elements.previewTotalGross.textContent = elements.totalGross.textContent;
+
+            // Show preview, hide form
+            elements.invoiceForm.classList.add('hidden');
+            elements.invoicePreview.classList.remove('hidden');
+        });
+
+        // Print Invoice Button Event Listener
+        elements.printInvoiceButton.addEventListener('click', () => {
+            window.print();
+        });
+
+        // Edit Invoice Button Event Listener
+        elements.editInvoiceButton.addEventListener('click', () => {
+            // Show form, hide preview
+            elements.invoiceForm.classList.remove('hidden');
+            elements.invoicePreview.classList.add('hidden');
+        });
+
+        // Initial render of items (empty table)
+        renderInvoiceItems();
+        // Initial check for conditional visibility
+        toggleBankAccountVisibility();
+        toggleReferenceInvoiceVisibility();
+    </script>
+</body>
+</html>
