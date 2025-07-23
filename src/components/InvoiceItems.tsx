@@ -1,68 +1,66 @@
 import { useState } from "react";
 import { Input } from "./ui/input";
-//import { Label } from "./ui/label";
-
-type InvoiceItem = {
-  description: string;
-  quantity: number;
-  unitPrice: number;
-  vatRate: number;
-  total: number;
-};
 
 export const InvoiceItems = () => {
-  const [items, setItems] = useState<InvoiceItem[]>([
-    { description: "", quantity: 1, unitPrice: 0, vatRate: 23, total: 0 },
+  const [items, setItems] = useState([
+    { description: "Item 1", quantity: 1.2345, unitPrice: 10.5678, vatRate: 23, total: 0, taxAmount: 0 },
   ]);
-  const [decimalPlaces, setDecimalPlaces] = useState<number>(2);
+  const [decimalPlaces, setDecimalPlaces] = useState(2);
 
-  const handleItemChange = (index: number, field: keyof InvoiceItem, value: string | number) => {
+  const handleItemChange = (index: number, field: keyof typeof items[0], value: number | string) => {
     const updatedItems = [...items];
+    const updatedItem = { ...updatedItems[index] };
 
-    // Handle parsing only for numeric fields
-    const parsedValue =
-      field === "quantity" || field === "unitPrice" || field === "vatRate"
-        ? parseFloat(value as string)
-        : value;
+    // Update the specific field
+  (updatedItem[field] as typeof value) = field === "quantity" || field === "unitPrice" || field === "vatRate" ? Number(value) : value;
 
-    // Ensure parsedValue is valid for numeric fields
-    if (field === "description" || !isNaN(parsedValue as number)) {
-      updatedItems[index] = {
-        ...updatedItems[index],
-        [field]: parsedValue,
-        total: updatedItems[index].quantity * updatedItems[index].unitPrice,
-      };
-      setItems(updatedItems);
-    }
-  };
+    // Recalculate the total and tax amount
+    updatedItem.total = parseFloat((updatedItem.quantity * updatedItem.unitPrice).toFixed(2)); // Total always has 2 decimal places
+    updatedItem.taxAmount = parseFloat(((updatedItem.total * updatedItem.vatRate) / 100).toFixed(2)); // Tax Amount always has 2 decimal places
 
-  const addItem = () => {
-    setItems([...items, { description: "", quantity: 1, unitPrice: 0, vatRate: 23, total: 0 }]);
-  };
-
-  const deleteItem = (index: number) => {
-    const updatedItems = items.filter((_, i) => i !== index);
+    // Update the item in the array
+    updatedItems[index] = updatedItem;
     setItems(updatedItems);
   };
 
-  const validateQuantity = (value: number): boolean => {
-    const regex = new RegExp(`^-?\\d*(\\.\\d{0,${decimalPlaces}})?$`);
-    return regex.test(value.toString());
+  const handleDecimalPlacesChange = (newDecimalPlaces: number) => {
+    setDecimalPlaces(newDecimalPlaces);
+
+    // Round quantity to the new decimal places and recalculate total and tax amount
+    const roundedItems = items.map((item) => ({
+      ...item,
+      quantity: parseFloat(item.quantity.toFixed(newDecimalPlaces)),
+      total: parseFloat((item.quantity * item.unitPrice).toFixed(2)), // Total always has 2 decimal places
+      taxAmount: parseFloat(((item.total * item.vatRate) / 100).toFixed(2)), // Tax Amount always has 2 decimal places
+    }));
+    setItems(roundedItems);
+  };
+
+  const addItem = () => {
+    setItems([...items, { description: "", quantity: 0, unitPrice: 0, vatRate: 23, total: 0, taxAmount: 0 }]);
+  };
+
+  const deleteItem = (index: number) => {
+    setItems(items.filter((_, i) => i !== index));
   };
 
   return (
     <div className="space-y-4">
       <h2 className="text-xl font-semibold text-gray-700">Invoice Items</h2>
       <div className="overflow-x-auto">
-        <table className="min-w-full bg-white border border-gray-200 rounded-lg">
+        <table
+          className="min-w-full bg-white border border-gray-200 rounded-lg"
+          style={{ tableLayout: "auto" }} // Allows dynamic column widths
+        >
           <thead>
             <tr className="bg-gray-100 text-left">
-              <th className="p-2 border-b">Description</th>
-              <th className="p-2 border-b">Quantity</th>
-              <th className="p-2 border-b">Unit Price</th>
-              <th className="p-2 border-b">VAT Rate (%)</th>
-              <th className="p-2 border-b">Total</th>
-              <th className="p-2 border-b">Actions</th>
+              <th className="p-2 border-b" style={{ width: "30%", minWidth: "150px" }}>Description</th>
+              <th className="p-2 border-b" style={{ width: "10%" }}>Quantity</th>
+              <th className="p-2 border-b" style={{ width: "10%" }}>Unit Price</th>
+              <th className="p-2 border-b" style={{ width: "5%" }}>VAT Rate (%)</th>
+              <th className="p-2 border-b" style={{ width: "10%" }}>Tax Amount</th>
+              <th className="p-2 border-b" style={{ width: "20%" }}>Total</th>
+              <th className="p-2 border-b" style={{ width: "15%" }}>Actions</th>
             </tr>
           </thead>
           <tbody>
@@ -74,36 +72,35 @@ export const InvoiceItems = () => {
                     value={item.description}
                     onChange={(e) => handleItemChange(index, "description", e.target.value)}
                     placeholder="Item description"
+                    className="w-full"
                   />
                 </td>
                 <td className="p-2">
                   <Input
                     type="number"
-                    value={item.quantity.toFixed(decimalPlaces)} // Ensure this is a string
-                    step={Math.pow(10, -decimalPlaces)} // Dynamically set step based on decimal places
-                    onChange={(e) => handleItemChange(index, "quantity", parseFloat(e.target.value))} // Parse back to number
-                    onBlur={(e) => handleItemChange(index, "quantity", parseFloat(e.target.value).toFixed(decimalPlaces))} // Format on blur
+                    value={item.quantity.toFixed(decimalPlaces)}
+                    step={Math.pow(10, -decimalPlaces)}
+                    onChange={(e) => handleItemChange(index, "quantity", parseFloat(e.target.value))}
                   />
                 </td>
                 <td className="p-2">
                   <Input
                     type="number"
-                    step={0.01} // Fixed step for monetary values
-                    value={item.unitPrice}
-                    onChange={(e) => handleItemChange(index, "unitPrice", Number(e.target.value))}
+                    value={item.unitPrice.toFixed(2)}
+                    step={0.01}
+                    onChange={(e) => handleItemChange(index, "unitPrice", parseFloat(e.target.value))}
                   />
                 </td>
                 <td className="p-2">
                   <Input
                     type="number"
-                    step={0.01} // Fixed step for VAT rates
                     value={item.vatRate}
-                    onChange={(e) => handleItemChange(index, "vatRate", Number(e.target.value))}
+                    step={1}
+                    onChange={(e) => handleItemChange(index, "vatRate", parseFloat(e.target.value))}
                   />
                 </td>
-                <td className="p-2">
-                  {(item.quantity * item.unitPrice).toFixed(2)} {/* Always display total price with 2 decimal places */}
-                </td>
+                <td className="p-2">{item.taxAmount.toFixed(2)}</td>
+                <td className="p-2">{item.total.toFixed(2)}</td>
                 <td className="p-2">
                   <button
                     className="text-red-600 hover:underline"
@@ -123,11 +120,12 @@ export const InvoiceItems = () => {
       >
         Add Item
       </button>
-      <label>
-        Decimal Places:
+      <label className="block mt-4">
+        Decimal Places for Quantity:
         <select
           value={decimalPlaces}
-          onChange={(e) => setDecimalPlaces(Number(e.target.value))}
+          onChange={(e) => handleDecimalPlacesChange(Number(e.target.value))}
+          className="ml-2 border border-gray-300 rounded-md p-1"
         >
           <option value="0">0</option>
           <option value="1">1</option>
