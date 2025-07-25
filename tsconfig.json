@@ -1,4 +1,4 @@
-{
+/*{
   "files": [],
   "references": [
     { "path": "./tsconfig.app.json" },
@@ -19,4 +19,18 @@
   },
   "include": ["src"],
   "exclude": ["node_modules", "dist"]
+}
+*/
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "lib": ["ES2022", "DOM", "DOM.Iterable"],
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "strict": true,
+    "jsx": "react-jsx"
+  },
+  "include": ["src"]
 }
