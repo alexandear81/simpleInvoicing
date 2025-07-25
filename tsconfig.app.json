@@ -9,10 +9,10 @@
 
     /* Bundler mode */
     "moduleResolution": "bundler",
-    "allowImportingTsExtensions": true,
+    /*"allowImportingTsExtensions": true,*/
     "verbatimModuleSyntax": true,
     "esModuleInterop": true,
-    "emitDeclarationOnly": true,
+    "emitDeclarationOnly": false,
     "moduleDetection": "force",
     "noEmit": false,
     "noEmitOnError": false,
