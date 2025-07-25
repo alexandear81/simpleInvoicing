@@ -16,6 +16,7 @@ export interface Item {
     quantity: number;
     pricePerUnit: number;
     vatRate: TStawkaPodatku;
+    vatRateNum: number; // e.g. 23
     vatAmount: number;
     total: number;
 }
@@ -35,10 +36,8 @@ export interface Invoice {
     header: {
         caption: string;
         number: string;
-        dates: {
-            issueDate: string;
-            saleDate: string;
-        };
+        issueDate: string;
+        saleDate: string;
         currency: TKodWaluty;
         total: number;
         invoiceForm: TRodzajFaktury;

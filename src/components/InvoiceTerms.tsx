@@ -1,9 +1,11 @@
 import { useState } from "react";
 import { Input } from "./ui/input";
 import { Select } from "./ui/select";
+import { useInvoice } from "../context/InvoiceContext";
 import { Label } from "./ui/label";
 
 export const InvoiceTerms = () => {
+  const { invoiceData, setInvoiceData } = useInvoice();
   const [terms, setTerms] = useState({
     paymentType: "bank_transfer",
     currency: "PLN",
@@ -11,6 +13,7 @@ export const InvoiceTerms = () => {
   });
 
   const handleInputChange = (field: string, value: string) => {
+    setInvoiceData({ ...invoiceData, paymentTerms: { ...invoiceData.paymentTerms, [field]: value } });
     setTerms({ ...terms, [field]: value });
   };
 
@@ -22,9 +25,9 @@ export const InvoiceTerms = () => {
           <Label htmlFor="payment-type">Payment Type</Label>
           <Select
             id="payment-type"
-            value={terms.paymentType}
+            value={invoiceData.paymentTerms.method}
             onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
-              handleInputChange("paymentType", e.target.value)
+              handleInputChange("method", e.target.value)
             }
           >
             <option value="bank_transfer">Bank Transfer</option>
@@ -33,18 +36,10 @@ export const InvoiceTerms = () => {
           </Select>
         </div>
         <div>
-          <Label htmlFor="currency">Currency</Label>
-          <Input
-            id="currency"
-            value={terms.currency}
-            onChange={(e) => handleInputChange("currency", e.target.value)}
-          />
-        </div>
-        <div>
           <Label htmlFor="notes">Additional Notes</Label>
           <Input
             id="notes"
-            value={terms.notes}
+            value={invoiceData.paymentTerms.notes}
             onChange={(e) => handleInputChange("notes", e.target.value)}
             placeholder="Optional notes for the invoice"
           />

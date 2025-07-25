@@ -1,105 +1,130 @@
-import { useState } from "react";
+import { useInvoice } from "../context/InvoiceContext";
+//import type { TStawkaPodatku } from "../types/invoice.constants";
+import { c_TStawkaPodatku } from "../types/invoice.constants";
 import { Input } from "./ui/input";
+import { Button } from "./ui/button";
+import { useRef } from "react";
+import type { Item } from "../types/invoice";
+import { UnitOfMeasure } from "../types/uom";
 
 export const InvoiceItems = () => {
-  const [items, setItems] = useState([
-    { description: "Item 1", quantity: 1.2345, unitPrice: 10.5678, vatRate: 23, total: 0, taxAmount: 0 },
-  ]);
-  const [decimalPlaces, setDecimalPlaces] = useState(2);
+  const { invoiceData, setInvoiceData } = useInvoice();
+  const positionCounter = useRef(invoiceData.items.length + 1);
 
-  const handleItemChange = (index: number, field: keyof typeof items[0], value: number | string) => {
-    const updatedItems = [...items];
-    const updatedItem = { ...updatedItems[index] };
-
-    // Update the specific field
-  (updatedItem[field] as typeof value) = field === "quantity" || field === "unitPrice" || field === "vatRate" ? Number(value) : value;
-
-    // Recalculate the total and tax amount
-    updatedItem.total = parseFloat((updatedItem.quantity * updatedItem.unitPrice).toFixed(2)); // Total always has 2 decimal places
-    updatedItem.taxAmount = parseFloat(((updatedItem.total * updatedItem.vatRate) / 100).toFixed(2)); // Tax Amount always has 2 decimal places
-
-    // Update the item in the array
-    updatedItems[index] = updatedItem;
-    setItems(updatedItems);
+  const updateItems = (newItems: Item[]) => {
+    setInvoiceData({
+      ...invoiceData,
+      items: newItems.map((item) => ({
+        ...item,
+        total: parseFloat((item.quantity * item.pricePerUnit).toFixed(2)),
+        vatAmount: parseFloat(((item.quantity * item.pricePerUnit * item.vatRateNum) / 100).toFixed(2)),
+      })),
+    });
   };
 
-  const handleDecimalPlacesChange = (newDecimalPlaces: number) => {
-    setDecimalPlaces(newDecimalPlaces);
-
-    // Round quantity to the new decimal places and recalculate total and tax amount
-    const roundedItems = items.map((item) => ({
-      ...item,
-      quantity: parseFloat(item.quantity.toFixed(newDecimalPlaces)),
-      total: parseFloat((item.quantity * item.unitPrice).toFixed(2)), // Total always has 2 decimal places
-      taxAmount: parseFloat(((item.total * item.vatRate) / 100).toFixed(2)), // Tax Amount always has 2 decimal places
-    }));
-    setItems(roundedItems);
+  const handleChange = (
+    index: number,
+    field: keyof Item,
+    value: string | number
+  ) => {
+    const updated = [...invoiceData.items];
+    updated[index] = {
+      ...updated[index],
+      [field]: typeof value === "string" && (field === "quantity" || field === "pricePerUnit" || field === "vatRate")
+        ? parseFloat(value)
+        : value,
+    };
+    updateItems(updated);
   };
 
   const addItem = () => {
-    setItems([...items, { description: "", quantity: 0, unitPrice: 0, vatRate: 23, total: 0, taxAmount: 0 }]);
+    const newItem: Item = {
+      position: positionCounter.current++,
+      caption: "",
+      unit: "H87",
+      quantity: 1,
+      pricePerUnit: 100,
+      vatRate: "23",
+      vatRateNum: 23,
+      vatAmount: 23,
+      total: 123,
+    };
+    updateItems([...invoiceData.items, newItem]);
   };
 
   const deleteItem = (index: number) => {
-    setItems(items.filter((_, i) => i !== index));
+    const filtered = invoiceData.items.filter((_, i) => i !== index);
+    updateItems(filtered);
   };
 
   return (
     <div className="space-y-4">
       <h2 className="text-xl font-semibold text-gray-700">Invoice Items</h2>
       <div className="overflow-x-auto">
-        <table
-          className="min-w-full bg-white border border-gray-200 rounded-lg"
-          style={{ tableLayout: "auto" }} // Allows dynamic column widths
-        >
-          <thead>
-            <tr className="bg-gray-100 text-left">
-              <th className="p-2 border-b" style={{ width: "30%", minWidth: "150px" }}>Description</th>
-              <th className="p-2 border-b" style={{ width: "10%" }}>Quantity</th>
-              <th className="p-2 border-b" style={{ width: "10%" }}>Unit Price</th>
-              <th className="p-2 border-b" style={{ width: "5%" }}>VAT Rate (%)</th>
-              <th className="p-2 border-b" style={{ width: "10%" }}>Tax Amount</th>
-              <th className="p-2 border-b" style={{ width: "20%" }}>Total</th>
-              <th className="p-2 border-b" style={{ width: "15%" }}>Actions</th>
+        <table className="min-w-full bg-white border border-gray-200 rounded-lg">
+          <thead className="bg-gray-100 text-left">
+            <tr>
+              <th className="p-2 border-b">Description</th>
+              <th className="p-2 border-b">Unit</th>
+              <th className="p-2 border-b">Quantity</th>
+              <th className="p-2 border-b">Unit Price</th>
+              <th className="p-2 border-b">VAT Rate (%)</th>
+              <th className="p-2 border-b">Tax Amount</th>
+              <th className="p-2 border-b">Total</th>
+              <th className="p-2 border-b">Actions</th>
             </tr>
           </thead>
           <tbody>
-            {items.map((item, index) => (
+            {invoiceData.items.map((item, index) => (
               <tr key={index} className="border-b">
                 <td className="p-2">
                   <Input
-                    type="text"
-                    value={item.description}
-                    onChange={(e) => handleItemChange(index, "description", e.target.value)}
-                    placeholder="Item description"
-                    className="w-full"
+                    value={item.caption}
+                    onChange={(e) => handleChange(index, "caption", e.target.value)}
+                  />
+                </td>
+                <td className="p-2">
+                  <select
+                    value={item.unit}
+                    onChange={(e) => handleChange(index, "unit", e.target.value)}
+                  >
+                    {UnitOfMeasure.map((uom) => (
+                      <option key={uom} value={uom}>{uom}</option>
+                    ))}
+                  </select>
+                </td>
+                <td className="p-2">
+                  <Input
+                    type="number"
+                    value={item.quantity}
+                    step="0.0001"
+                    onChange={(e) => handleChange(index, "quantity", parseFloat(e.target.value))}
                   />
                 </td>
                 <td className="p-2">
                   <Input
                     type="number"
-                    value={item.quantity.toFixed(decimalPlaces)}
-                    step={Math.pow(10, -decimalPlaces)}
-                    onChange={(e) => handleItemChange(index, "quantity", parseFloat(e.target.value))}
+                    value={item.pricePerUnit}
+                    step="0.01"
+                    onChange={(e) => handleChange(index, "pricePerUnit", parseFloat(e.target.value))}
                   />
                 </td>
                 <td className="p-2">
-                  <Input
-                    type="number"
-                    value={item.unitPrice.toFixed(2)}
-                    step={0.01}
-                    onChange={(e) => handleItemChange(index, "unitPrice", parseFloat(e.target.value))}
-                  />
-                </td>
-                <td className="p-2">
-                  <Input
-                    type="number"
+                  <select
                     value={item.vatRate}
-                    step={1}
-                    onChange={(e) => handleItemChange(index, "vatRate", parseFloat(e.target.value))}
-                  />
+                    onChange={(e) => {
+                      const rateStr = e.target.value;
+                      const rateNum = parseFloat(rateStr.replace("%", "")) || 0;
+                      handleChange(index, "vatRate", rateStr);
+                      handleChange(index, "vatRateNum", rateNum);
+                    }}
+                  >
+                    {c_TStawkaPodatku.map((rate) => (
+                      <option key={rate} value={rate}>{rate}</option>
+                    ))}
+                  </select>
                 </td>
-                <td className="p-2">{item.taxAmount.toFixed(2)}</td>
+                <td className="p-2">{item.vatAmount.toFixed(2)}</td>
                 <td className="p-2">{item.total.toFixed(2)}</td>
                 <td className="p-2">
                   <button
@@ -114,28 +139,7 @@ export const InvoiceItems = () => {
           </tbody>
         </table>
       </div>
-      <button
-        className="bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-        onClick={addItem}
-      >
-        Add Item
-      </button>
-      <label className="block mt-4">
-        Decimal Places for Quantity:
-        <select
-          value={decimalPlaces}
-          onChange={(e) => handleDecimalPlacesChange(Number(e.target.value))}
-          className="ml-2 border border-gray-300 rounded-md p-1"
-        >
-          <option value="0">0</option>
-          <option value="1">1</option>
-          <option value="2">2</option>
-          <option value="3">3</option>
-          <option value="4">4</option>
-          <option value="5">5</option>
-          <option value="6">6</option>
-        </select>
-      </label>
+      <Button onClick={addItem}>Add Item</Button>
     </div>
   );
 };

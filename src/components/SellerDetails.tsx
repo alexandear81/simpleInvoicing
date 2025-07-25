@@ -1,21 +1,17 @@
 import { useState } from "react";
 import { Input } from "./ui/input";
 import { Label } from "./ui/label";
+import { useInvoice } from "../context/InvoiceContext";
 
 export const SellerDetails = () => {
-  const [seller, setSeller] = useState({
-    name: "Example Company",
-    address: "123 Example Street, City, Country",
-    country: "Country",
-    nip: "1234567890",
-    bank: "PL00 0000 0000 0000 0000 0000 0000",
-  });
+  const { invoiceData, setInvoiceData } = useInvoice();
 
   const [isCollapsed, setIsCollapsed] = useState(false);
 
   const handleInputChange = (field: string, value: string) => {
-    setSeller({ ...seller, [field]: value });
+    setInvoiceData({ ...invoiceData, parties: { ...invoiceData.parties, partyFrom: { ...invoiceData.parties.partyFrom, [field]: value } } });
   };
+
 
   return (
     <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
@@ -33,13 +29,19 @@ export const SellerDetails = () => {
       {isCollapsed && (
         <div className="mt-3 text-sm text-gray-600">
           <p>
-            <strong>Name:</strong> {seller.name}
+            <strong>Name:</strong> {invoiceData.parties.partyFrom.name}
           </p>
           <p>
-            <strong>Address:</strong> {seller.address}
+            <strong>Address:</strong> {invoiceData.parties.partyFrom.address}
           </p>
           <p>
-            <strong>NIP:</strong> {seller.nip}
+            <strong>Country:</strong> {invoiceData.parties.partyFrom.country}
+          </p>
+          <p>
+            <strong>NIP:</strong> {invoiceData.parties.partyFrom.taxId}
+          </p>
+          <p>
+            <strong>Bank Account:</strong> {invoiceData.parties.partyFrom.account}
           </p>
         </div>
       )}
@@ -54,7 +56,7 @@ export const SellerDetails = () => {
             </Label>
             <Input
               id="seller-name"
-              value={seller.name}
+              value={invoiceData.parties.partyFrom.name}
               onChange={(e) => handleInputChange("name", e.target.value)}
             />
           </div>
@@ -66,7 +68,7 @@ export const SellerDetails = () => {
             </Label>
             <textarea
               id="seller-address"
-              value={seller.address}
+              value={invoiceData.parties.partyFrom.address}
               onChange={(e) => handleInputChange("address", e.target.value)}
               className="border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
               rows={2}
@@ -80,7 +82,7 @@ export const SellerDetails = () => {
             </Label>
             <Input
               id="seller-country"
-              value={seller.country}
+              value={invoiceData.parties.partyFrom.country}
               onChange={(e) => handleInputChange("country", e.target.value)}
             />
           </div>
@@ -92,8 +94,8 @@ export const SellerDetails = () => {
             </Label>
             <Input
               id="seller-nip"
-              value={seller.nip}
-              onChange={(e) => handleInputChange("nip", e.target.value)}
+              value={invoiceData.parties.partyFrom.taxId}
+              onChange={(e) => handleInputChange("taxId", e.target.value)}
             />
           </div>
 
@@ -104,8 +106,8 @@ export const SellerDetails = () => {
             </Label>
             <Input
               id="seller-bank"
-              value={seller.bank}
-              onChange={(e) => handleInputChange("bank", e.target.value)}
+              value={invoiceData.parties.partyFrom.account}
+              onChange={(e) => handleInputChange("account", e.target.value)}
             />
           </div>
         </div>

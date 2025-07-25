@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState } from 'react';
 import type { Invoice } from '../types/invoice';
-import { UnitOfMeasure } from '../types/uom';
+//import { UnitOfMeasure } from '../types/uom';
 
 interface InvoiceContextProps {
   invoiceData: Invoice;
@@ -14,10 +14,8 @@ export const InvoiceProvider: React.FC<{ children: React.ReactNode }> = ({ child
     header: {
       caption: 'Faktura VAT',
       number: '1/2025',
-      dates: {
-        issueDate: '2025-07-24',
-        saleDate: '2025-07-24',
-      },
+      issueDate: '2025-07-24',
+      saleDate: '2025-07-24',
       currency: 'PLN',
       total: 0,
       invoiceForm: 'VAT',
@@ -28,6 +26,7 @@ export const InvoiceProvider: React.FC<{ children: React.ReactNode }> = ({ child
         address: '123 Seller Street',
         taxId: '123-456-7890',
         country: 'PL',
+        account: 'PL00 0000 0000 0000 0000 0000 0000',
       },
       partyTo: {
         name: 'Example Buyer',
@@ -44,6 +43,7 @@ export const InvoiceProvider: React.FC<{ children: React.ReactNode }> = ({ child
         quantity: 2,
         pricePerUnit: 50,
         vatRate: '23',
+        vatRateNum: 23, // e.g. 23
         vatAmount: 23,
         total: 123,
       },
@@ -54,6 +54,7 @@ export const InvoiceProvider: React.FC<{ children: React.ReactNode }> = ({ child
         quantity: 1,
         pricePerUnit: 75,
         vatRate: '8',
+        vatRateNum: 8, // e.g. 8
         vatAmount: 8,
         total: 83,
       },

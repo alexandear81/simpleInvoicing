@@ -6,13 +6,15 @@ import { InvoiceItems } from "./InvoiceItems";
 import { InvoiceTerms } from "./InvoiceTerms";
 import { InvoicePreviewModal } from "./InvoicePreviewModal";
 import { InvoiceHTML } from "./InvoiceHTML";
+import { useInvoice } from "../context/InvoiceContext";
 import html2pdf from "html2pdf.js";
 
 export const InvoiceForm = () => {
+  const { invoiceData } = useInvoice();
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
   const invoiceRef = useRef(null);
 
-  const invoiceData = {
+  /*const invoiceData1 = {
     seller: {
       name: "Example Seller",
       address: "123 Seller Street",
@@ -25,7 +27,7 @@ export const InvoiceForm = () => {
       { description: "Item 1", quantity: 2, unitPrice: 50, total: 100 },
       { description: "Item 2", quantity: 1, unitPrice: 75, total: 75 },
     ],
-  };
+  };*/
 
   const handleGeneratePreview = () => {
     setIsPreviewOpen(true);
@@ -81,7 +83,7 @@ export const InvoiceForm = () => {
       {/* Hidden container for PDF generation */}
       <div className="hidden">
         <div ref={invoiceRef}>
-          <InvoiceHTML invoiceData={invoiceData} />
+          {/* <InvoiceHTML invoiceData={invoiceData} /> */}
         </div>
       </div>
     </div>

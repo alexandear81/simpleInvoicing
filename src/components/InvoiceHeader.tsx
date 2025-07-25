@@ -1,18 +1,13 @@
-import React, { useState } from "react";
+//import { useState } from "react";
 import { Input } from "./ui/input";
 import { Label } from "./ui/label";
+import { useInvoice } from "../context/InvoiceContext";
 
 export const InvoiceHeader = () => {
-  const [invoiceDetails, setInvoiceDetails] = useState({
-    number: "FV/2025/07/001",
-    issueDate: new Date().toISOString().split("T")[0],
-    dueDate: new Date(new Date().setDate(new Date().getDate() + 7))
-      .toISOString()
-      .split("T")[0],
-  });
+  const { invoiceData, setInvoiceData } = useInvoice();
 
   const handleInputChange = (field: string, value: string) => {
-    setInvoiceDetails({ ...invoiceDetails, [field]: value });
+    setInvoiceData({ ...invoiceData, header: { ...invoiceData.header, [field]: value } });
   };
 
   return (
@@ -21,7 +16,7 @@ export const InvoiceHeader = () => {
         <Label htmlFor="invoice-number">Invoice Number</Label>
         <Input
           id="invoice-number"
-          value={invoiceDetails.number}
+          value={invoiceData.header.number}
           onChange={(e) => handleInputChange("number", e.target.value)}
         />
       </div>
@@ -30,7 +25,7 @@ export const InvoiceHeader = () => {
         <Input
           id="issue-date"
           type="date"
-          value={invoiceDetails.issueDate}
+          value={invoiceData.header.issueDate}
           onChange={(e) => handleInputChange("issueDate", e.target.value)}
         />
       </div>
@@ -39,8 +34,17 @@ export const InvoiceHeader = () => {
         <Input
           id="due-date"
           type="date"
-          value={invoiceDetails.dueDate}
-          onChange={(e) => handleInputChange("dueDate", e.target.value)}
+          value={invoiceData.header.saleDate}
+          onChange={(e) => handleInputChange("saleDate", e.target.value)}
+        />
+      </div>
+      <div>
+        <Label htmlFor="currency">Currency</Label>
+        <Input
+          id="currency"
+          type="text"
+          value={invoiceData.header.currency}
+          onChange={(e) => handleInputChange("currency", e.target.value)}
         />
       </div>
     </div>
