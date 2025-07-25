@@ -5,7 +5,9 @@
     { "path": "./tsconfig.node.json" }
   ],
   "compilerOptions": {
-    "jsx": "react",
+    "jsx": "react-jsx",
+    "module": "ESNext",
+    "target": "ESNext",
     "baseUrl": "./",
     "noImplicitAny": false,
     "strict": false,
