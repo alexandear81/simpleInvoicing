@@ -5,7 +5,7 @@ import { BuyerDetails } from "./BuyerDetails";
 import { InvoiceItems } from "./InvoiceItems";
 import { InvoiceTerms } from "./InvoiceTerms";
 import { InvoicePreviewModal } from "./InvoicePreviewModal";
-import { InvoiceHTML } from "./InvoiceHTML";
+//import { InvoiceHTML } from "./InvoiceHTML";
 import { useInvoice } from "../context/InvoiceContext";
 import html2pdf from "html2pdf.js";
 
