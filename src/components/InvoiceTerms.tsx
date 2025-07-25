@@ -24,11 +24,8 @@ export const InvoiceTerms = () => {
         <div>
           <Label htmlFor="payment-type">Payment Type</Label>
           <Select
-            id="payment-type"
             value={invoiceData.paymentTerms.method}
-            onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
-              handleInputChange("method", e.target.value)
-            }
+            onValueChange={(value: string) => handleInputChange("method", value)}
           >
             <option value="bank_transfer">Bank Transfer</option>
             <option value="cash">Cash</option>

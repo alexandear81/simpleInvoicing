@@ -1,5 +1,5 @@
 // src/types/invoice.ts
-import type { TRodzajFaktury, TKodWaluty, TStawkaPodatku, TKodyKrajowUE, TLadunek } from "./invoice.constants"
+import type { TRodzajFaktury, TKodWaluty, TStawkaPodatku, TKodyKrajowUE } from "./invoice.constants"
 import type { UnitOfMeasure } from "./uom";
 export interface Party {
     name: string;
